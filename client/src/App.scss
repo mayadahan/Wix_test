@@ -59,6 +59,27 @@ body {
 		font-size: 12px;
 	}
 
+	.hide {
+		background-color: #fff;
+		color: #20455e;
+		position: absolute;
+		top: 8px;
+		right: 8px;
+		width: 50px;
+		height: 25px;
+		border: none;
+		font-style: normal;
+		display: none;
+		cursor: pointer;
+		outline:none;
+
+	}
+	
+	.restore {
+		color: #3899ec;
+		cursor: pointer;
+	}
+
 	.tickets {
 
 		margin: 0;
@@ -80,6 +101,9 @@ body {
 
 			&:hover {
 				box-shadow: 0 2px 6px 1px #d3d7da;
+				.hide {
+					display: inline;
+				  }
 			}
 
 			.title {

@@ -1,5 +1,6 @@
 import axios from 'axios';
-
+import React from 'react';
+import { SSL_OP_NO_TICKET } from 'constants';
 export type Ticket = {
 	id: string,
 	title: string;
@@ -7,7 +8,9 @@ export type Ticket = {
 	creationTime: number;
 	userEmail: string;
 	labels?: string[];
+	show: boolean;
 }
+
 
 export type ApiClient = {
 	getTickets: () => Promise<Ticket[]>;
