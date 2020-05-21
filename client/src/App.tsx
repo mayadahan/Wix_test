@@ -9,6 +9,7 @@ export type AppState = {
 	search: string,
 	hiddenTickets: number,
 	restoreTickets: string
+	lable?: string;
 	}
 
 const api = createApiClient();
@@ -43,6 +44,7 @@ export class App extends React.PureComponent<{}, AppState> {
 				<p className='content'>{ticket.content}</p>
 				<footer>
 					<div className='meta-data'>By {ticket.userEmail} | { new Date(ticket.creationTime).toLocaleString()}</div>
+					<div className='lables'>{ticket.labels ? ticket.labels.map((label,i) => <span className="label">{label}</span>) : null}</div>
 				</footer>
 			</li>))}
 		</ul>);
