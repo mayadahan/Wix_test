@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './App.scss';
 import {createApiClient, Ticket} from './api';
 import { SSL_OP_NO_TICKET } from 'constants';
+import { render } from 'react-dom';
 
 export type AppState = {
 	tickets?: Ticket[],
@@ -29,6 +30,9 @@ export class App extends React.PureComponent<{}, AppState> {
 			tickets: await api.getTickets()
 		});
 		if(this.state.tickets){
+			for (let i = 0; i <this.state.tickets.length; i++){
+				this.state.tickets[i].seeMore = true;
+		}
 		this.setState({ 
 			filtered: [...this.state.tickets].slice(0,20)}
 		); }
@@ -36,18 +40,30 @@ export class App extends React.PureComponent<{}, AppState> {
 	
 	renderTickets = (tickets: Ticket[]) => {
 		const filteredTickets = this.searchFilter(tickets);
-
+	
 		return (<ul className='tickets'>
 			{filteredTickets.map((ticket, i) => (<li key={ticket.id} className='ticket'>
 				<button className="hide" value="hide" onClick={() => this.hide(i)}>Hide</button>
 				<h5 className='title'>{ticket.title}</h5>
-				<p className='content'>{ticket.content}</p>
+				{ticket.seeMore ? <p className='seeLess'>{ticket.content}</p> : <p className='content'>{ticket.content}</p>}
+					<button className="seeMoreButton" onClick={()=> this.expand(i)}>{this.state.tickets ? this.state.tickets[i].seeMore ? "See more" : "See less" : null}</button>
 				<footer>
 					<div className='meta-data'>By {ticket.userEmail} | { new Date(ticket.creationTime).toLocaleString()}</div>
 					<div className='lables'>{ticket.labels ? ticket.labels.map((label,i) => <span className="label">{label}</span>) : null}</div>
 				</footer>
 			</li>))}
 		</ul>);
+	}
+
+	expand = (i:number) => {
+		
+		const tickets = this.state.filtered ? this.searchFilter(this.state.filtered)  : null;
+		if(tickets){
+			tickets[i].seeMore = !tickets[i].seeMore;
+		this.setState({
+			filtered: tickets
+		})
+			}
 	}
 
 	hide = (i:number) => {
@@ -79,12 +95,16 @@ export class App extends React.PureComponent<{}, AppState> {
 
 	//Restore all hidden tickets
 	restore = () => {
-		if(this.state.tickets) 
+		if(this.state.tickets) {
+			for (let i = 0; i < this.state.tickets.length; i++){
+				this.state.tickets[i].seeMore = true;
+			}
+		
 			this.setState({
 				filtered : [...this.state.tickets],
 				hiddenTickets : 0
 			});
-	}
+	}}
 
 	render() {	
 		const {tickets,filtered,restoreTickets,hiddenTickets} = this.state;
@@ -97,7 +117,7 @@ export class App extends React.PureComponent<{}, AppState> {
 			<header>
 				<input type="search" placeholder="Search..." onChange={(e) => this.onSearch(e.target.value)}/>
 			</header>
-			{tickets ? (<div className='results'>Showing {tickets.length - hiddenTickets} results {restore}</div>) : null }	
+			{tickets? (<div className='results'>Showing {tickets.length - hiddenTickets} results {restore}</div>) : null }	
 			{filtered? this.renderTickets(filtered) : <h2>Loading..</h2>}
 		</main>)
 	}
