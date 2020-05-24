@@ -7,7 +7,7 @@ export type Ticket = {
 	creationTime: number;
 	userEmail: string;
 	labels?: string[];
-	seeMore: boolean;
+	seeMore?: boolean;
 }
  
 
