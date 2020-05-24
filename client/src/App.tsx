@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import './App.scss';
-import Popup from './Popup';
 import {createApiClient, Ticket} from './api';
 import { SSL_OP_NO_TICKET } from 'constants';
 import { render } from 'react-dom';
@@ -140,11 +139,6 @@ export class App extends React.PureComponent<{}, AppState> {
 	);
 	};
 
-	togglePopup = () => {
-		this.setState({  
-			showPopup: !this.state.showPopup  
-	   }); 
-	}
 
 	render() {	
 		const {tickets,hiddenTickets,results} = this.state;
@@ -156,8 +150,6 @@ export class App extends React.PureComponent<{}, AppState> {
 			<header>
 				<input type="search" placeholder="Search..." onChange={(e) => this.onSearch(e.target.value)}/>
 			</header>
-			<button className="add" onClick={this.togglePopup.bind(this)}></button> 
-			<div>{this.state.showPopup ? <Popup text='Add a new ticket' closePopup={this.togglePopup.bind(this)}/> : null}</div>  
 			{tickets? (<div className='results'>Showing {tickets.length} results {restore}</div>) : null }	
 			{tickets? this.renderTickets(tickets) : <h2>Loading..</h2>}
 			{results? this.Pagination(20, results.length) : null}
