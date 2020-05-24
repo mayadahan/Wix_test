@@ -7,12 +7,3 @@ import data from './data.json';
 
 export const tempData = data as Ticket[];
 
-export function addTicket = (newTicket: string) => {
-
-    let tempData = require('./data.json');
-    tempData.unshift(newTicket);
-    let temp = JSON.stringify(temp);
-    fs.writeFileSync('./data.json', temp, null, 2);
-     
-
-}
