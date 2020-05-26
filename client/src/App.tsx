@@ -32,14 +32,14 @@ export class App extends React.PureComponent<{}, AppState> {
 
 	async componentDidMount() {
 		this.setState({
-			tickets: await api.getTickets(),
+			tickets: await api.searchTickets('',1),
 			results: await api.searchResults(''),
 			showPopup: false
 		});
 
 		 }
 
-	
+	//returns the tickets components into render()
 	renderTickets = (tickets: Ticket[]) => {
 
 	    const filteredTickets = tickets;
@@ -49,18 +49,18 @@ export class App extends React.PureComponent<{}, AppState> {
 				<button className="hide" value="hide" onClick={() => this.hide(i)}>Hide</button>
 				<h5 className='title'>{ticket.title}</h5>
 				{ticket.seeMore ? <p className='seeLess'>{ticket.content}</p> : <p className='content'>{ticket.content}</p>}
-					<button className="seeMoreButton" onClick={()=> this.expand(i)}>{ticket.seeMore ? "See more" : "See less"}</button>
+				<button className="seeMoreButton" onClick={()=> this.expand(i)}>{ticket.seeMore ? "See more" : "See less"}</button>
 				<footer>
 					<div className='meta-data'>By {ticket.userEmail} | { new Date(ticket.creationTime).toLocaleString()}</div>
 					{ticket.priority === "normal" ? <button className="setPriority" onClick={() => this.togglePopup(i)}>Set Priority</button> :
-					 ticket.priority === "high" ? <button className="setPriority" onClick={() => this.togglePopup(i)} style={{backgroundColor:"#f14e4e"}}>High</button> :
-					 <button className="setPriority" onClick={() => this.togglePopup(i)} style={{backgroundColor:"#84f14e"}}>Low</button>}
+					ticket.priority === "high" ? <button className="setPriority" onClick={() => this.togglePopup(i)} style={{backgroundColor:"#f14e4e"}}>High</button> :
+					<button className="setPriority" onClick={() => this.togglePopup(i)} style={{backgroundColor:"#84f14e"}}>Low</button>}
 					<div className='lables'>{ticket.labels ? ticket.labels.map((label,i) => <span className="label">{label}</span>) : null}</div>
 				</footer>
 			</li>))}
 		</ul>);
 	}
-
+	//changes seeMore property in the i'th ticket, in order to expand/reduce it's content
 	expand = (i:number) => {
 		const tickets = this.state.tickets ? this.state.tickets  : null;
 		
@@ -72,7 +72,7 @@ export class App extends React.PureComponent<{}, AppState> {
 		}
 			
 	}
-
+	//removes the i'th ticket from the tickets array in order to hide it
 	hide = (i:number) => {
 		const filteredTicketsHide = this.state.tickets ? this.state.tickets : null;
 		if(filteredTicketsHide){
@@ -84,7 +84,7 @@ export class App extends React.PureComponent<{}, AppState> {
 	
 	  }
 	}
-
+	//tickets, results ask from the server for the relevant tickets based on search result and current page
 	onSearch = async (val: string, newPage?: number) => {
 		clearTimeout(this.searchDebounce);
 		this.searchDebounce = setTimeout(async () => {
@@ -105,6 +105,7 @@ export class App extends React.PureComponent<{}, AppState> {
 			hiddenTickets: 0
 		});
 	}
+	//create page array by the number of results, and returns the page navigation component
 	Pagination = (pageSize: number , ticketsNumber: number) => {
 		const pageNumbers = [];
 
@@ -121,14 +122,12 @@ export class App extends React.PureComponent<{}, AppState> {
 						{number}
 					</a>
 				</li>    
-				)
-			)}
+			))}
 		</ul>
 		</nav>
-	
-	);
-	};
-		
+	);};
+
+	//changes the showPopup property in order to show/close the setPriority popup	
 	togglePopup = (i: number) => {
 		this.setState({  
 			showPopup: !this.state.showPopup
@@ -137,27 +136,29 @@ export class App extends React.PureComponent<{}, AppState> {
 			this.setState({
 				ticketNumber: i
 			})
-		}}
+		}
+	}
 	
-
+	/*change the priority value of the i'th ticket and sends to 
+	  setPriority in order to save the new value in the .json file*/
 	changeSelect = async (value: string) => {
-
 
 		const i = this.state.ticketNumber;
 		if(i >= 0){
 		const tickets = this.state.tickets ? this.state.tickets  : null;
-		if(tickets){
-			tickets[i].priority = value;
-			this.setState({
-				tickets: await api.setPriority(tickets[i].id, value, this.state.search, this.state.page),
-			});
+			if(tickets){
+				tickets[i].priority = value;
+				this.setState({
+					tickets: await api.setPriority(tickets[i].id, value, this.state.search, this.state.page),
+				});
+			}
 		}
-		}
-
+		//close popup and call onSearch in order to render the updated tickets
 		this.togglePopup(-1);
 		this.onSearch(this.state.search, this.state.page);
 	}
 
+	//returns the popup component into render()
 	showPopup = () => {
 		return (
 		<div className='popup'>
@@ -174,12 +175,12 @@ export class App extends React.PureComponent<{}, AppState> {
 		);
 	}
 
-
+	//render the page components
 	render() {	
 		const {tickets,hiddenTickets,results, showPopup} = this.state;
 		let restore = (hiddenTickets > 0 ? (<span className='hiddenMsg'><i>(<span >{hiddenTickets} hidden ticket{hiddenTickets > 1 ? 's' : ''} - </span> 
-						<span className='restore' onClick={this.restore}> restore</span>
-					)</i></span>) :null)
+					  <span className='restore' onClick={this.restore}> restore</span>)</i></span>) :null)
+
 		return (<main>
 			<h1>Tickets List</h1>
 			<header>

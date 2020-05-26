@@ -19,19 +19,11 @@ app.use((_, res, next) => {
 	next();
 });
 
-app.get('/api/tickets', (req, res) => {
-
-	const page = req.query.page || 1;
-
-	const paginatedData = tempData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-	
-	res.send(paginatedData);
-});
-
 app.get('/api/search', (req, res) => {
 
 	const page = req.query.page || 1;
 	const value = req.query.value || "";
+	const filtered = req.query.filtered;
 	let search_pages = [];
 	const regex = /^(after:|before:|from:)((0[1-9]|[1-2][0-9]|3[0-1])[\/\-](0[1-9]|1[0-2])[\/\-](\d{4})|\w+[@]\w+[.]\w+)[ ]*([\w ]*)[ ]*$/ 
 	const m = value.match(regex);
@@ -49,11 +41,10 @@ app.get('/api/search', (req, res) => {
 
 		(t.title.toLowerCase() + t.content.toLowerCase()).includes(value.toLowerCase()))
 		}
-			
+
 	const paginatedData = search_pages.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-	
- 	res.send(paginatedData);
-	 
+	res.send(paginatedData);
+
 });
 
 app.get('/api/searchResults', (req, res) => {

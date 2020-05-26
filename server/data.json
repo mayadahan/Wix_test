@@ -58,7 +58,7 @@
       "Problem",
       "Tutorial"
     ],
-    "priority": "normal",
+    "priority": "low",
     "seeMore": true
   },
   {
@@ -115,7 +115,7 @@
     "content": "I'm experiencing the following error when trying to use my POST function from another Wix site.\n\nAccess to fetch at 'https://www.mitchwagnerdesign.com/_functions/csv' from origin 'https://www.bedminsterptg.com' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.\n\nPlease help me figure out why 'Access-Control-Allow-Origin': '*' is not covering this.\n\nhttp-function on https://www.mitchwagnerdesign.com\nexport function post_csv(request) {\n let options = {\n        headers: {\n 'Access-Control-Allow-Origin': '*',\n 'Content-Type': 'application/json'\n        }\n    };return request.body.json()\n        .then((body) => {\n            body.expirationDate = new Date(new Date().getTime() + (24 * 60 * 60 * 1000))\n return wixData.insert(\"CSVExportData\", body, {\n \"suppressAuth\": true,\n \"suppressHooks\": false\n            });\n        })\n        .then((results) => {\n            options.body = {\n \"_id\": results._id,\n \"url\": \"https://www.mitchwagnerdesign.com/_functions/csv/\" + results._id,\n \"expiration\": results.expirationDate\n            };\n            console.log(\"RETURNING DATA\")\n            console.log(options)\n return created(options);\n        })\n // something went wrong\n        .catch((error) => {\n            options.body = {\n \"error\": error\n            };\n return serverError(options);\n        });\nCalling the Method from https://www.bedminsterptg.com\nfetch(\"https://www.mitchwagnerdesign.com/_functions/csv\", {\n            method: \"post\",\n            headers: {\n \"Content-Type\": \"text/plain\"\n            },\n            body: '*******PRIVATE*DATA*REDACTED********'\n        })\n        .then((httpResponse) => {\n            console.log(\"REQUEST SENT\");\n if (httpResponse.ok) {\n return httpResponse.json();\n            } else {\n                $w(\"#buttonDownload\").enable();\n return Promise.reject(\"Fetch did not succeed\");\n            }\n        })\n        .then((json) => {\n            console.log(json);\n            wixLocation.to(json.url);\n            $w(\"#buttonDownload\").enable();\n        })\n        .catch((err) => {\n            console.log(err)\n            $w(\"#buttonDownload\").enable();\n        });\n",
     "userEmail": "bep@dov.sh",
     "creationTime": 1524338473695,
-    "priority": "normal",
+    "priority": "high",
     "seeMore": true
   },
   {
@@ -763,7 +763,7 @@
     "content": " \nI am trying to add a CONTACT ME button to members to enable other members to either call or send them a direct email, without going through database or admins.\nFree Members will need to be able to add their own phone number &/or email address to a button or other function for paid members to contact them DIRECT, preferably in the menu below the PROFILE or part of the profile page.\nI am happy to pay a pro to do this is needed but nobody seems to be able to tell me a cost to do so, or how I can do it myself.\n \n\nCan somone please explain how I can do this?",
     "userEmail": "al@vina.kh",
     "creationTime": 1518366630493,
-    "priority": "normal",
+    "priority": "high",
     "seeMore": true
   },
   {
@@ -1771,7 +1771,7 @@
     "content": "Hello this is my first forum post, so let me know if I can do anything differently in the future!\n\n\nI have a sock subscription website which sells socks every month.  In order to customize the Wix PaidPlans landing page, I have to code the page using the WixPay API.\n\nEverything works fine, even the payment goes through.  The only problem is that the  \nwixPay.startPayment function does not prompt/return a shipping address.  So I don't know where to ship the goods.  The frustrating part is that if you use the regular Wix Store, the checkout page requires both the billing and shipping addresses.  As far as I can tell, there is no way to modify the lightbox that appears in order to collect more information.\n\nPlease let me know if there is indeed a way to import shipping info from the customers using WixPay.\n\nA picture of the WixPay payment collection lightbox:\n\n\n \n\nHere is the code I am using.  Again, it works, but I just need to add the extra shipping address.\n\n\nPage Code:\n\n\n\n$w.onReady(function () {\n\n const currentPlanObject = $w(\"#dynamicDataset\").getCurrentItem();\n const planId = currentPlanObject._id;\n const planPrice = currentPlanObject.price;\n\n  $w('#button1').onClick((event) => {\n\n let user = wixUsers.currentUser;\n let isLoggedIn = user.loggedIn;\n if (!isLoggedIn) {\n      wixUsers.promptLogin().then(() => {\n        processPlan(planId, planPrice);\n      })\n    } else {\n      processPlan(planId, planPrice);\n    }\n });\n});\n\nfunction processPlan(myId) {\n\n \n    wixPaidPlans.purchasePlan(myId).then(orderObject => {\n      wixWindow.openLightbox(\"Contact\", orderObject)\n       .then((goForIt) => {\n if (goForIt) {\n         wixPay.startPayment(orderObject.wixPayOrderId);\n       }\n      });\n    })\n \n}\n \n\n\nBackend code:\n\n\n \nimport wixData from 'wix-data';\n\nexport function wixPaidPlans_onPlanPurchased(event) {\n\n // Insert a title reflecting the type of transaction, and\n // the event's order object (json) into \n // the collection's data field.\n if (event.order.price.amount === 0) {\n let orderData = {\n \"title\": \"Free plan purchased\",\n \"data\": event.order\n        };\n        wixData.insert(\"planEvents\", orderData);\n    } else {\n let orderData = {\n \"title\": \"Regular plan purchased\",\n \"data\": event.order\n        };\n        wixData.insert(\"planEvents\", orderData);\n    }\n}\n\n\n\nLink to how it would look.  This is a product page, not a subscription page, but the problem is the same:\n https://reexlmain.wixsite.com/nysc/stores/products \n\n",
     "userEmail": "guc@cugiton.td",
     "creationTime": 1525458376891,
-    "priority": "high",
+    "priority": "low",
     "seeMore": true
   },
   {
