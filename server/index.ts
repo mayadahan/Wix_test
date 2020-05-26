@@ -1,7 +1,8 @@
 import express from 'express';
-
+import * as fs from 'fs';
 import bodyParser = require('body-parser');
-import { tempData } from './temp-data';
+import {tempData} from './temp-data';
+import {Ticket} from '@ans-exam/client/src/api';
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use((_, res, next) => {
 });
 
 app.get('/api/tickets', (req, res) => {
+
 	const page = req.query.page || 1;
 
 	const paginatedData = tempData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -26,7 +28,7 @@ app.get('/api/tickets', (req, res) => {
 	res.send(paginatedData);
 });
 
-app.get('/api/tickets/search', (req, res) => {
+app.get('/api/search', (req, res) => {
 
 	const page = req.query.page || 1;
 	const value = req.query.value || "";
@@ -54,7 +56,7 @@ app.get('/api/tickets/search', (req, res) => {
 	 
 });
 
-app.get('/api/tickets/searchResults', (req, res) => {
+app.get('/api/searchResults', (req, res) => {
 
 	const value = req.query.value || "";
 	let search_pages = [];
@@ -77,10 +79,35 @@ app.get('/api/tickets/searchResults', (req, res) => {
 	}
 		
 	res.send(search_pages);
-	 
 });
+
+app.get('/api/setPriority', (req, res) => {
+
+	const id = req.query.id || "";
+	const value = req.query.value || "";
+	const search = req.query.search || "";
+	const page = req.query.page || 1;
+
+	var rawData = fs.readFileSync('./data.json');
+	var obj = JSON.parse(rawData.toString());
+	for(var i = 0; i < obj.length; i++){
+		if(obj[i].id === id)
+			obj[i].priority = value;
+	}
+	
+	fs.writeFileSync('./data.json', JSON.stringify(obj, null, 2));
+
+	var search_pages = [];
+    search_pages = obj.filter((t: any) => 
+	 	(t.title.toLowerCase() + t.content.toLowerCase()).includes(search.toLowerCase()))
+
+	const paginatedData = search_pages.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+	res.send(paginatedData);
+});
+
 
 
 app.listen(PORT);
 console.log('server running', PORT)
+
 

@@ -7,4 +7,3 @@ import data from './data.json';
 
 export const tempData = data as Ticket[];
 
-
